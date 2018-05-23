@@ -783,9 +783,13 @@ QString zList::guessImageType(QString path)
 {
 	QString out;
 	QStringList x;
-	x << "jpg";
 	x << "bmp";
+	x << "png";
+	x << "tga";
+	x << "jpg";
 	x << "tiff";
+	x << "gif";
+	x << "webp";
 
 	QImage *test = new QImage(32,32,QImage::Format_ARGB32);
 	for (auto &it : x)
