@@ -609,8 +609,8 @@ void zList::SelectSimilar()
 
 void zList::itemDoubleClicked(QListWidgetItem *item)
 {
-	QDir d = QDir(path0 + "/" + item->text());
-	if (d.exists())
+	QDir xdir = QDir(path0 + "/" + item->text());
+	if (xdir.exists())
 	{
 		Enter();
 		Snapshot();
