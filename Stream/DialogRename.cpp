@@ -45,6 +45,8 @@ void DialogRename::cmdOk()
 	ui.comboBoxExtension->setMinimumWidth(0);
 
 	list_origin.clear();
+
+	detect_contents = ui.checkBoxDetectContents->isChecked();
 	accept();
 }
 

@@ -12,6 +12,8 @@ public:
 	QString ext;
 	bool extmore = false;
 	int extstage = 0;
+
+	bool detect_contents = false;
 private:
 	QStringList list_origin;
 	QString base_name = "Untitled";

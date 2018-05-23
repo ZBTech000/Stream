@@ -328,6 +328,14 @@ void zList::Rename()
 				QStringList list2 = name.split(".");
 				name = list2.first();
 
+				if (rename_dlg->detect_contents)
+				{
+					QString dext = guessImageType(oldname);
+					if (!dext.isEmpty())
+					{
+						ext = dext;
+					}
+				}
 				QString newname = name + txtnum + "." + ext;
 
 				QDir dir = QDir(path0);
@@ -769,5 +777,29 @@ void zList::itemDoubleClicked(QListWidgetItem *item)
 	{
 		QDesktopServices::openUrl(path0 + "/" + item->text());
 	}
+}
+
+QString zList::guessImageType(QString path)
+{
+	QString out;
+	QStringList x;
+	x << "jpg";
+	x << "bmp";
+	x << "tiff";
+
+	QImage *test = new QImage(32,32,QImage::Format_ARGB32);
+	for (auto &it : x)
+	{
+		QString txt = it;
+		test->load(path, txt.toLocal8Bit().data());
+		if (!test->isNull())
+		{
+			delete test;
+			return txt;
+		}
+	}
+	delete test;
+
+	return "";
 }
 

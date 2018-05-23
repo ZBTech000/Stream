@@ -52,6 +52,8 @@ public:
 	void mouseReleaseEvent(QMouseEvent *e);
 	void itemDoubleClicked(QListWidgetItem *item);
 private:
+	QString guessImageType(QString path);
+private:
 	Ui::zList ui;
 	QString path0;
 	DialogRename* rename_dlg;
