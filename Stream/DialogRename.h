@@ -11,6 +11,7 @@ public:
 	QString name1;
 private:
 	QString base_name = "Untitled";
+	QString ext;
 public:
 	DialogRename(QWidget *parent = 0);
 	~DialogRename();
@@ -20,6 +21,8 @@ private:
 public:
 	void SetCaption(QString caption);
 	void SetStartName(QString t);
+	void ShowExt(bool t);
+	void SetExtList(QStringList t);
 	public slots :
 		void cmdOk();
 	void cmdExit();

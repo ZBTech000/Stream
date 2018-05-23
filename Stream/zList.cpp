@@ -1,16 +1,11 @@
 #include "stdafx.h"
-#include "stdafx.h"
 #include "zList.h"
-#include <QStandardPaths>
 #include <DialogRename.h>
-#include <QDesktopServices>
 
 zList::zList(QWidget *parent)
 	: QListWidget(parent)
 {
 	ui.setupUi(this);
-
-	connect(this, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(itemDoubleClicked(QListWidgetItem *)));
 	start = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 	if (start.isEmpty())
 	{
@@ -46,15 +41,8 @@ void zList::ShowFolderContents(QString DirName)
 	this->clear();
 	QDir Dir = QDir(DirName);
 
-	QTime startt;
-	startt.start();
-
 	while (!Dir.exists())
 	{
-		if (startt.elapsed() > 2000)
-		{
-			int stop = 0;
-		}
 		if (history_id == 1)
 		{
 			DirName = start;
@@ -181,6 +169,7 @@ void zList::Rename()
 {
 	if (this->selectedItems().count() == 1)
 	{
+		rename_dlg->ShowExt(false);
 		rename_dlg->SetCaption("Rename");
 		rename_dlg->SetStartName("Untitled");
 		int x = rename_dlg->exec();
@@ -198,7 +187,24 @@ void zList::Rename()
 	}
 	else
 	{
+		rename_dlg->ShowExt(true);
+		QStringList exts;
+		exts << "Existing";
+
 		QList<QListWidgetItem *> listt = this->selectedItems();
+		
+		for (auto &it : listt)
+		{
+			QListWidgetItem *b = it;
+			QString txt2 = b->text();
+			QStringList g = txt2.split(".");
+
+			if (!exts.contains(g.last().toLower()))
+			{
+				exts << g.last().toLower();
+			}
+		}
+		rename_dlg->SetExtList(exts);
 
 		int selcount = listt.count();
 
@@ -307,6 +313,7 @@ void zList::NewFolder()
 {
 	QDir test = QDir(path0);
 	rename_dlg->SetCaption("Create Folder");
+	rename_dlg->ShowExt(false);
 	int ok = rename_dlg->exec();
 	if (ok != rename_dlg->Accepted) return;
 
@@ -607,8 +614,95 @@ void zList::SelectSimilar()
 	}
 }
 
+void zList::mousePressEvent(QMouseEvent *event)
+{
+	if (this->selectedItems().count() > 1)
+	{
+		rangeselected = true;
+		this->clearSelection();
+		if (itemAt(event->x(), event->y()))
+		{
+			itemAt(event->x(), event->y())->setSelected(true);
+		}
+		return;
+	}
+	int t = clicktime2.elapsed();
+	if (t > QApplication::doubleClickInterval())
+	{
+		clicktime = QTime();
+		clicktime2 = QTime();
+		doubleclickstage = -1;
+	}
+
+	if (doubleclickstage == -1)
+	{
+		clicktime.start();
+
+		clearSelection();
+
+		if (itemAt(event->x(), event->y()))
+		{
+			itemAt(event->x(), event->y())->setSelected(true);
+		}
+		mx = event->x();
+		my = event->y();
+	}
+	else if (doubleclickstage == 0)
+	{
+		doubleclickstage = 1;
+	}
+}
+
+void zList::mouseMoveEvent(QMouseEvent *e)
+{
+	if (doubleclickstage == 0)
+	{
+		if (abs(e->x() - mx) > 8 || abs(e->y() - my) > 8)
+		{
+			clicktime = QTime();
+			clicktime2 = QTime();
+			doubleclickstage = -1;
+		}
+	}
+
+
+	if (e->buttons() == Qt::LeftButton)
+	{
+		this->itemAt(e->x(), e->y())->setSelected(true);
+	}
+}
+
+void zList::mouseReleaseEvent(QMouseEvent *e)
+{
+	if (doubleclickstage == -1)
+	{
+		doubleclickstage = 0;
+		clicktime2 = QTime();
+		clicktime2.start();
+	}
+	else if (doubleclickstage == 1)
+	{
+		doubleclickstage = 2;
+	}
+	
+	if (doubleclickstage == 2)
+	{
+		int t = clicktime.elapsed();
+		if (t > QApplication::doubleClickInterval()) return;
+		clicktime = QTime();
+		doubleclickstage = -1;
+
+		if (!itemAt(e->x(), e->y())) return;
+
+		this->setCurrentItem(this->itemAt(e->x(), e->y()));
+		itemDoubleClicked(this->itemAt(e->x(), e->y()));
+	}
+}
+
 void zList::itemDoubleClicked(QListWidgetItem *item)
 {
+	if (!item) return;
+
 	QDir xdir = QDir(path0 + "/" + item->text());
 	if (xdir.exists())
 	{
@@ -624,3 +718,4 @@ void zList::itemDoubleClicked(QListWidgetItem *item)
 		QDesktopServices::openUrl(path0 + "/" + item->text());
 	}
 }
+

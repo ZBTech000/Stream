@@ -75,6 +75,9 @@
       <item>
        <widget class="QLineEdit" name="lineEditName"/>
       </item>
+      <item>
+       <widget class="QComboBox" name="comboBoxExtension"/>
+      </item>
      </layout>
     </widget>
    </item>

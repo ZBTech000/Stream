@@ -1,4 +1,5 @@
-#pragma once
+#ifndef Stream_h__
+#define Stream_h__
 
 #include <QtWidgets/QMainWindow>
 #include "ui_Stream.h"
@@ -25,3 +26,4 @@ public:
 	void Path_L_Enter();
 	void Path_R_Enter();
 };
+#endif // Stream_h__

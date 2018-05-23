@@ -25,10 +25,23 @@ void DialogRename::SetStartName(QString t)
 	ui.lineEditName->setText(t);
 }
 
+void DialogRename::ShowExt(bool t)
+{
+	ui.comboBoxExtension->setVisible(t);
+}
+
+void DialogRename::SetExtList(QStringList t)
+{
+	ui.comboBoxExtension->clear();
+	ui.comboBoxExtension->addItems(t);
+}
+
 void DialogRename::cmdOk()
 {
 	name1 = ui.lineEditName->text();
 	this->setWindowTitle("Rename");
+	ext = ui.comboBoxExtension->currentText();
+
 	accept();
 }
 

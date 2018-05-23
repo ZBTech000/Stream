@@ -17,6 +17,13 @@ private:
 	int simkey = 0;
 
 	bool waitkey = false;
+
+	bool rangeselected = false;
+
+	int doubleclickstage = -1;
+	int mx = 0, my = 0;
+	QTime clicktime;
+	QTime clicktime2;
 public:
 	QString start;
 public:
@@ -40,7 +47,9 @@ public:
 
 	void GoToPath(QString path);
 	void SelectSimilar();
-	public slots:
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *e);
+	void mouseReleaseEvent(QMouseEvent *e);
 	void itemDoubleClicked(QListWidgetItem *item);
 private:
 	Ui::zList ui;
