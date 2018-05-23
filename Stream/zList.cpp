@@ -167,6 +167,9 @@ void zList::SelectItemStarts(QString text)
 
 void zList::Rename()
 {
+	rename_dlg = new DialogRename(this);
+	rename_dlg->hide();
+
 	if (this->selectedItems().count() == 1)
 	{
 		rename_dlg->ShowExt(false);
@@ -204,6 +207,9 @@ void zList::Rename()
 				exts << g.last().toLower();
 			}
 		}
+
+		exts << "Custom";
+
 		rename_dlg->SetExtList(exts);
 
 		int selcount = listt.count();
@@ -229,6 +235,23 @@ void zList::Rename()
 		if (x != QDialog::Rejected)
 		{
 			QString name = rename_dlg->name1;
+			QString ext1 = rename_dlg->ext;
+			
+			bool ex0 = (ext1.compare("existing", Qt::CaseInsensitive)	== 0);
+			bool ex1 = (ext1.compare("custom", Qt::CaseInsensitive)		== 0);
+			
+			if (rename_dlg->extmore)
+			{
+				QStringList bext = ext1.split(".");
+				ext1 = bext.last();
+				ext1 = ext1.replace(")", "");
+				rename_dlg->extmore = false;
+			}
+			if (!ex1)
+			{
+				QStringList g2 = name.split(".");
+				name = g2.first();
+			}
 
 			for (int tx = 0; tx < this->count(); tx++)
 			{
@@ -266,6 +289,13 @@ void zList::Rename()
 			{
 				ncount = itercount;
 			}
+			QString oldext;
+			if (name.contains("."))
+			{
+				QStringList g2 = name.split(".");
+				oldext = g2.last();
+			}
+			
 			name = name.replace("0", "");
 
 			int counter = 0;
@@ -282,7 +312,22 @@ void zList::Rename()
 				}
 
 				QStringList extg = tx->text().split(".");
-				QString ext = extg.last();
+				QString ext;
+				if (ex0)
+				{
+					ext = extg.last();
+				}
+				else if (ex1)
+				{
+					ext = oldext;
+				}
+				else
+				{
+					ext = ext1;
+				}
+				QStringList list2 = name.split(".");
+				name = list2.first();
+
 				QString newname = name + txtnum + "." + ext;
 
 				QDir dir = QDir(path0);
@@ -292,6 +337,8 @@ void zList::Rename()
 			ShowFolderContents(path0);
 		}
 	}
+
+	rename_dlg->deleteLater();
 }
 void zList::DeleteFolder(QString path)
 {
@@ -311,6 +358,9 @@ void zList::DeleteFolder(QString path)
 
 void zList::NewFolder()
 {
+	rename_dlg = new DialogRename(this);
+	rename_dlg->hide();
+
 	QDir test = QDir(path0);
 	rename_dlg->SetCaption("Create Folder");
 	rename_dlg->ShowExt(false);
@@ -321,6 +371,8 @@ void zList::NewFolder()
 	test.setCurrent(path0);
 	bool ok2 = test.mkdir(name);
 	ShowFolderContents(path0);
+
+	rename_dlg->deleteLater();
 }
 
 void zList::keyPressEvent(QKeyEvent *event)

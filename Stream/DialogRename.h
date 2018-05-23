@@ -9,9 +9,13 @@ class DialogRename : public QDialog
 	Q_OBJECT
 public:
 	QString name1;
-private:
-	QString base_name = "Untitled";
 	QString ext;
+	bool extmore = false;
+	int extstage = 0;
+private:
+	QStringList list_origin;
+	QString base_name = "Untitled";
+	int minw = 0;
 public:
 	DialogRename(QWidget *parent = 0);
 	~DialogRename();
@@ -25,6 +29,7 @@ public:
 	void SetExtList(QStringList t);
 	public slots :
 		void cmdOk();
+		void cmdExtMore();
 	void cmdExit();
 };
 
